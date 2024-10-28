@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me - Sue@Golden Tigers Realtors</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            font-size: 18px;
+        }
+
+
+        .logo {
+            width: 100px;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .nav-container {
+            margin-left: 130px;
+            padding-top: 10px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        nav ul li {
+            position: relative;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            padding: 10px;
+            display: block;
+        }
+
+        nav ul li ul {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background-color: #444;
+            display: none;
+            flex-direction: column;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        nav ul li:hover > ul {
+            display: block;
+        }
+
+        nav ul li ul li {
+            margin: 0;
+        }
+
+        .profile {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .profile img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .profile a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .profile a:hover {
+            color: #ddd;
+        }
+
+        main {
+            padding-top: 100px; /* Adjust for the fixed header */
+        }
+
+        .bordered-section {
+            border: 2px solid #000000;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .social-media {
+            margin-top: 1rem;
+        }
+
+        .social-media a {
+            color: #fff;
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .social-media a:hover {
+            color: #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <header role="banner">
+        <img src="_images/aunty sue.png" alt="Golden Tigers Realtors Logo" class="logo">
+        <div class="nav-container">
+            <nav role="navigation">
+                <ul>
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="AboutUs.html">About Us</a></li>
+                    <li><a href="Properties.php">Properties</a></li>
+                    <li><a href="Realtors.php">Our Realtors</a></li>
+                    <li><a href="ContactUs.php">Contact Sue</a></li>
+                    <li><a href="#">My Account <i class="fas fa-caret-down"></i></a>
+                        <ul>
+                            <li><a href="AccountSettings.php">Account Settings</a></li>
+                            <li><a href="view_inquiry_replies.php">Check Inquiry replies</a></li>
+                            <li><a href="view_agent_replies.php">Check messages from agents</a></li>
+                            <li><a href="logout.php">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>       
+    </header>
+
+    <main>
+        <section id="about">
+            <h2>Overview of Dada Properties Johannesburg</h2>
+            <br>
+            <div style="display: flex; flex-wrap: wrap;">
+                <div style="flex: 1; margin-right: 20px;">
+                    <h3>Service Tailored to You</h3>
+                    <br>
+                    <p>Dada Properties, under the guidance of Suihama Dada, provides a wide array of real estate services crafted to suit your individual needs. Whether you're looking to buy, sell, lease, or invest in residential, commercial, or industrial properties, I am dedicated to offering unparalleled guidance and support throughout your journey.</p>
+                </div>
+                <div style="flex: 1; margin-left: 20px;">
+                    <h3>Market Insights</h3>
+                    <br>
+                    <p>Suihama Dada brings a wealth of knowledge about the Johannesburg real estate market to the table. With a deep understanding of local trends, property values, and emerging opportunities, Suihama ensures that you receive strategic advice and customized solutions that perfectly align with your goals and preferences.</p>
+                </div>
+                <div style="flex: 1; margin-left: 20px;">
+                    <h3>Your Needs Come First</h3>
+                    <br>
+                    <p>With a commitment to delivering exceptional service, Suihama ensures that your needs and interests are at the forefront of every decision. Whether you're a first-time homebuyer, a corporate investor, or a seasoned property developer, I strive to provide a seamless and stress-free real estate experience.</p>
+                </div>
+                <div style="flex: 1; margin-left: 20px;">
+                    <h3>Embracing Innovation</h3>
+                    <br>
+                    <p>Suihama Dada stays ahead of the curve in the real estate industry by leveraging innovative technology and marketing strategies. From virtual property tours and digital marketing campaigns to data analytics and CRM systems, Suihama ensures that cutting-edge solutions are employed to enhance efficiency, reach, and effectiveness in serving you as a client.</p>
+                </div>
+            </div>
+        </section>
+
+        <br>
+        <div class="bordered-section">
+            <h2>Who I Am </h2>
+            <p> I am Suhaima Dada, a dedicated and driven real estate professional eager to expand my reach and serve a broader market. I am able to individually give each customer my specialised knowledge in order to connect you with your ideal home and investment properties. I bring a fresh perspective and unwavering commitment to excellence in every transaction.
+                Having honed my skills and expertise in the dynamic real estate landscape, I am well-equipped to navigate the intricacies of buying, selling, and leasing properties. Whether you’re a first-time homebuyer, seasoned investor, or looking to relocate, I am here to guide you through the process with personalized attention and integrity.
+            </p>
+        </div>
+        <br>
+        <div class="bordered-section">
+            <h2>My Mission</h2>
+            <p>My proactive approach, coupled with a keen understanding of market trends and local nuances, enables me to identify opportunities and deliver optimal results for my clients. By leveraging innovative marketing strategies and leveraging cutting-edge technology, I ensure maximum exposure for your property and streamline the entire transaction process.
+                With a strong emphasis on building lasting relationships and exceeding expectations, I am committed to being your trusted partner every step of the way. Whether you’re looking to buy, sell, or invest, let’s embark on this journey together and turn your real estate goals into reality.
+                I look forward to the opportunity to serve you and make your real estate dreams come true!
+            </p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Dada Properties. All rights reserved.</p>
+            <div class="social-media">
+                <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Ensure the dropdown menus show and hide properly
+        document.querySelectorAll('nav ul li').forEach(function(li) {
+            li.addEventListener('mouseover', function() {
+                const submenu = this.querySelector('ul');
+                if (submenu) submenu.style.display = 'block';
+            });
+            li.addEventListener('mouseout', function() {
+                const submenu = this.querySelector('ul');
+                if (submenu) submenu.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+
+</html>
