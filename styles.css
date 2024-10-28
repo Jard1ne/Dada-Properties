@@ -1,0 +1,571 @@
+/* Global styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 250px;
+    background-color: #4b69ec;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.sidebar-header h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.sidebar-menu li a {
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+.sidebar-menu li a i {
+    margin-right: 10px;
+}
+
+.sidebar-menu li a:hover {
+    background-color: #4b69ec;
+}
+
+/* Main content styles */
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Topbar styles */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.topbar-left h1 {
+    font-size: 1.5em;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.notifications {
+    position: relative;
+    margin-right: 20px;
+}
+
+.notifications .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: #fff;
+    border-radius: 50%;
+    padding: 5px 10px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+}
+
+.user-profile img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+/* User/Agent List - Grid Layout */
+.user-list, .agent-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid with minimum card size */
+    gap: 20px; /* Space between cards */
+    padding: 0;
+}
+
+/* User/Agent Card Styles */
+.user-item, .agent-item {
+    border: 1px solid #ddd; /* Border around each card */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #fff;
+    padding: 16px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: transform 0.3s, border-color 0.3s; /* Smooth hover effects */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.user-item:hover, .agent-item:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    border-color: #3498db; /* Change border color on hover */
+}
+
+/* User/Agent Text */
+.user-item h3, .agent-item h3 {
+    margin: 10px 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+.user-item p, .agent-item p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* User/Agent Actions (Edit/Delete Buttons) */
+.user-actions, .agent-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.edit-btn, .delete-btn {
+    padding: 8px 12px;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.edit-btn:hover {
+    background-color: #2980b9;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Add User/Agent Button */
+.add-btn {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.add-btn:hover {
+    background-color: #27ae60;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation-name: modalopen;
+    animation-duration: 0.4s;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover, .close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+/* Form Styles */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between form elements */
+    max-width: 500px; /* Optional max-width for better readability */
+    margin: 0 auto; /* Center the form */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 5px; /* Space between label and input */
+}
+
+input[type="text"], input[type="email"], input[type="number"], input[type="file"], textarea, select {
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="number"]:focus, input[type="file"]:focus, textarea:focus, select:focus {
+    border-color: #4b69ec; /* Highlight border on focus */
+    outline: none; /* Remove default outline */
+}
+
+textarea {
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 120px;
+}
+
+button[type="submit"] {
+    padding: 12px 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+}
+
+button[type="submit"]:hover {
+    background-color: #2980b9;
+}
+
+button[type="submit"]:focus {
+    outline: none; /* Remove focus outline */
+}
+
+/* For optional inputs like file uploads */
+input[type="file"] {
+    padding: 10px;
+    background-color: #fff;
+    border: 1px dashed #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Add form section spacing */
+form .form-section {
+    margin-bottom: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+/* Properties Grid */
+.property-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid with minimum column size */
+    gap: 20px; /* Space between each property card */
+    margin-top: 20px;
+}
+
+/* Property Item Styles */
+.property-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.property-item:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+/* Property Image */
+.property-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+}
+
+/* Property Text Content */
+.property-item h3 {
+    font-size: 18px;
+    margin: 10px 15px 5px;
+    color: #333;
+}
+
+.property-item p {
+    margin: 5px 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Property Action Buttons */
+.property-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+    background-color: #fafafa;
+}
+
+.property-actions .edit-btn, 
+.property-actions .delete-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.property-actions .edit-btn {
+    background-color: #3498db;
+    color: white;
+}
+
+.property-actions .edit-btn:hover {
+    background-color: #2980b9;
+}
+
+.property-actions .delete-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.property-actions .delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Image Count Badge */
+.image-count {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+/* Enquiries Grid */
+.enquiries-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid with minimum column size */
+    gap: 20px; /* Space between each enquiry card */
+    margin-top: 20px;
+}
+
+/* Enquiry Item Styles */
+.enquiry-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.enquiry-item:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+/* Enquiry Text Content */
+.enquiry-item h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.enquiry-item p {
+    font-size: 14px;
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Enquiry Action Buttons */
+.enquiry-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.enquiry-actions .view-btn,
+.enquiry-actions .delete-btn {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.enquiry-actions .view-btn {
+    background-color: #3498db;
+    color: white;
+}
+
+.enquiry-actions .view-btn:hover {
+    background-color: #2980b9;
+}
+
+.enquiry-actions .delete-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.enquiry-actions .delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Container for the list of messages */
+.messages-list {
+    display: grid; /* Use grid layout for messages */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid with minimum card size */
+    gap: 20px; /* Space between each message card */
+    margin-top: 20px;
+}
+
+/* Individual message card styling */
+.message-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.message-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Message Text Content */
+.message-card h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.message-card p {
+    font-size: 14px;
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Reply form */
+.reply-form {
+    margin-top: 15px;
+}
+
+.reply-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.reply-form .reply-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.reply-form .reply-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Back button styling */
+.back-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.back-btn:hover {
+    background-color: #c0392b;
+}

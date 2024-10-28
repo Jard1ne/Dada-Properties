@@ -1,0 +1,279 @@
+
+-- Drop and recreate schema
+DROP SCHEMA IF EXISTS golden_tigers;
+CREATE DATABASE golden_tigers;
+USE golden_tigers;
+
+-- Properties table
+CREATE TABLE properties ( 
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    title VARCHAR(100) NOT NULL, 
+    location VARCHAR(100) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    bedrooms INT,
+    bathrooms INT,
+    garage INT,
+    size DOUBLE,
+    description TEXT,
+    property_type VARCHAR(10) NOT NULL,
+    selling_type VARCHAR(10) NOT NULL,
+    status ENUM('available', 'sold', 'pending') DEFAULT 'available',
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Property images table
+CREATE TABLE property_images ( 
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    property_id INT, 
+    image_data LONGBLOB, 
+    image_path VARCHAR(255),
+    FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+);
+
+CREATE TABLE property_submissions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,  -- Foreign key referencing `users`
+    full_name VARCHAR(255) NOT NULL,  -- User's full name
+    email VARCHAR(255) NOT NULL,  -- User's email
+    phone_number VARCHAR(20),  -- User's phone number
+    title VARCHAR(255) NOT NULL,  -- Property Title
+    location VARCHAR(255) NOT NULL,  -- Property Location
+    price DECIMAL(10, 2) NOT NULL,  -- Property Price
+    selling_type VARCHAR(10) NOT NULL,  -- Selling Type (For Sale or For Rent)
+    property_type VARCHAR(100) NOT NULL,  -- Property Type (House, Apartment, Other)
+    other_property_type VARCHAR(100),  -- Optional field for 'Other' property type
+    bedrooms INT NOT NULL,  -- Number of Bedrooms
+    bathrooms INT NOT NULL,  -- Number of Bathrooms
+    garages INT NOT NULL,  -- Garage space
+    size DOUBLE NOT NULL,
+    description TEXT NOT NULL,  -- Property Description
+    images TEXT NOT NULL,  -- Store image filenames or paths (comma-separated list)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp of submission
+    FOREIGN KEY (user_id) REFERENCES users(id)  -- Links to the `users` table
+);
+
+
+CREATE TABLE admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fullname VARCHAR(100) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL, -- Passwords should be hashed
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE agents (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    position VARCHAR(25) NOT NULL,
+    area VARCHAR(25) NOT NULL,
+    phone_number VARCHAR(25),
+    email VARCHAR(255) NOT NULL,
+    image_path VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+CREATE TABLE agent_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    agent_id INT NOT NULL,
+    message TEXT NOT NULL,
+    reply TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (agent_id) REFERENCES agents(id)
+);
+
+-- Users table
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    role ENUM('user', 'agent') DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Customers table
+CREATE TABLE customers ( 
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    username VARCHAR(255) NOT NULL, 
+    email VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(20), 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Inquiries table
+CREATE TABLE inquiries ( 
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    customer_id INT, 
+    property_id INT, 
+    message TEXT NOT NULL, 
+    inquiry_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    status ENUM('Pending', 'In Progress', 'Closed') DEFAULT 'Pending', 
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE, 
+    FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE SET NULL 
+);
+
+-- Alter the Inquiries table to add username and property_title
+ALTER TABLE inquiries
+DROP COLUMN IF EXISTS username,
+DROP COLUMN IF EXISTS property_title;
+
+SELECT 
+    i.id, 
+    i.message, 
+    i.inquiry_date, 
+    i.status, 
+    c.full_name AS username, 
+    p.title AS property_title
+FROM 
+    inquiries i
+JOIN 
+    customers c ON i.customer_id = c.id
+JOIN 
+    properties p ON i.property_id = p.id;
+
+-- Insert a property 
+INSERT INTO properties (property_name, property_description) 
+VALUES ('Property 1', 'This is a sample property.'); 
+
+-- Get the ID of the inserted property 
+SET @property_id = LAST_INSERT_ID(); 
+
+-- Insert image paths associated with the property
+INSERT INTO property_images (property_id, image_name, image_path) 
+VALUES 
+(@property_id, 'Front View', '/images/property1_front.jpg'),
+(@property_id, 'Side View', '/images/property1_side.jpg');
+
+USE golden_tigers;
+INSERT INTO properties (title, location, address, price, bedrooms, garage, size, description, status, created_at, updated_at)
+VALUES
+    ('Property 1', 'Ruimsig, Roodepoort, Gauteng', 'Serengity Golf Estate', '4900000.00', 4, 2, '450', 'Welcome to this warm and lovingly maintained home in Serengity Golf Estate, centrally located in Ruimsig, just minutes from Hendrik Potgieter. This property boasts a prime location, secure setting, and excellent value. The impressive design includes ample parking, two double garages, and a luxurious entrance with a staircase and chandelier. The bright, open-plan kitchen features modern dark finishes, granite countertops, space for a double-door fridge, and a separate scullery. The dining and lounge areas lead to a study, built-in bar, and covered patio overlooking a sparkling pool and lush garden. Upstairs, the spacious master bedroom includes walk-in wardrobes, a full en-suite bathroom, and a sunny balcony. There are three additional generous bedrooms, all with en-suite bathrooms, and an extra music room that can also serve as a pajama lounge. Additional features include air conditioning, fiber readiness, staff quarters, and 24-hour security. Ruimsig is conveniently close to multiple private schools, numerous shopping centers, medical facilities, restaurants, and main road access.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 2', 'Strubensvalley, Gauteng', 'Strubensvallei', '3299000.00', 5, 3, '550', 'Elegance meets functionality in this 5-bedroom gem in Strubensvallei. Beyond the wrought-iron gates, this luxurious home features spacious bedrooms, 2.5 bathrooms, including an exclusive master en-suite, and a massive kitchen with modern finishes and a large scullery. Entertain effortlessly in the expansive family lounge, dedicated entertainment room, and outdoor space with a swimming pool, jacuzzi, and built-in braai. Additional amenities include a study, three-car garage, garden shed, and servants quarters. Located on a tranquil street, this property blends peace with accessibility, offering a refined living experience. Contact us for an exclusive viewing and experience luxurious living at its finest.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 3', 'Constantia Kloof, Roodepoort, Gauteng', 'Constantia Kloof', '2498000.00', 5, 2, '450', 'Discover the charm of this spacious 5-bedroom, 3.5-bathroom family home in Constantia Kloof. Set on a generous 1867m2 property, it offers ample space inside and out. Practicality meets timeless character with plenty of parking, a classic entrance hall, and a large entertainment room downstairs. Upstairs, enjoy a sunroom, dining room with courtyard views, and a spacious kitchen leading to the lounge and outdoor pool area. The master bedroom features a full en-suite with garden access, while additional bedrooms offer cozy retreats. With a big garden, storage facilities, and 2 domestic quarters, this home is ideal for family living. While not the epitome of luxury, its potential and classic charm make it a great opportunity. Schedule a viewing today and envision making this your own!', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 4', 'Weltevreden Park, Roodepoort, Gauteng', 'Weltevreden Park', '1499000.00', 3, 2, '457', 'Immerse yourself in luxury and comfort with this exquisite 3-bedroom, 3-bathroom home, meticulously designed to enhance your lifestyle. Upon entering, the expansive living area welcomes you with warmth and ample natural light, perfect for relaxation or entertaining. A stylish dining room and separate bar area offer ideal settings for intimate dinners and social gatherings. The heart of the home, the spacious kitchen, boasts modern appliances and ample counter space, inspiring culinary creativity. A versatile fourth bedroom doubles as a spacious office with its ensuite bathroom, offering functionality and privacy. Outside, the wrap-around garden, complete with a stunning patio and large pool, provides a picturesque oasis for relaxation. A double carport ensures shelter for your vehicles, adding convenience to this epitome of modern living.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 5', 'Little Falls, Roodepoort, Gauteng', 'Little Falls', '899000.00', 3, 2, '350', 'Welcome to this charming simplex townhouse nestled in a sought-after complex, promising comfort and convenience. Inside, an inviting open plan lounge awaits, ideal for relaxation or entertaining guests. The modern kitchen offers ample cupboard space and a dining area, perfect for family meals. Step onto the covered patio to enjoy the fresh air and overlook the neat, small garden, ideal for outdoor gatherings or unwinding. Three cozy bedrooms and a full bathroom cater to family needs, while a single carport, secured behind a gate, ensures convenient parking. Residents can also enjoy the communal swimming pool area for a refreshing oasis on sunny days. Don\'t miss the chance to call this delightful townhouse your new home sweet home!', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 6', 'Florida Glen, Roodepoort, Gauteng', 'Florida Glen', '4900000.00', 6, 4, '650', 'Welcome to this character-filled 4-bedroom double-story home featuring 2 self-contained cottages, a pool, patio, braai, and lapa. Upon entering through the remote driveway gate, you\'re greeted by spacious living areas on both floors. The lower level boasts a large tiled entrance hall and lounge, open-plan to an entertainer\'s dining area from a charming solid wood kitchen. Two sizable bedrooms and modern bathrooms are downstairs, while upstairs offers two more bedrooms, a study area, lounge, and guest bathroom. Enjoy the landscaped garden, pool, and lapa from the upstairs balcony. Two separate entrances lead to a double garage, carports, and additional features include character Dorma windows, an anthracite stove, exposed beam ceilings, staff quarters, and ample storage space. Situated near local amenities and schools, this property offers both convenience and comfort for the whole family.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 7', 'Blairgowrie, Randburg, Gauteng', 'Blairgowrie', '1849000.00', 3, 2, '350', 'Nestled on a tranquil tree-lined street in Blairgowrie, this property offers proximity to amenities and top schools, with easy access to Sandton and Rosebank. The spacious, modern kitchen and lounge boast direct garage access, granite tops, and a gas hob. Three bedrooms feature ample cupboard space, with Bedroom 1 & 2 sharing a full bathroom and the master bedroom enjoying a dressing room and private en-suite. A garden cottage with 1 bed, 1 bath, living room, kitchen, and en-suite bedroom provides rental income or space for extended family. The private garden hosts a swimming pool and patio, while leased solar panels offer energy efficiency, with the option to transfer or purchase the lease.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 8', 'Rangeview, Krugersdorp, Gauteng', 'RangeView', '2995000.00', 5, 2, '473', 'Welcome to a remarkable modern family home in the prestigious RangeView neighborhood, where contemporary allure meets family comfort. Upon entry, you\'ll feel the exceptional character of this home, with an expansive family room seamlessly transitioning from the entrance hall. Adjacent is a spacious sunroom with a fireplace, offering tranquil views of the pool and the stunning RangeView valley. The large kitchen is a culinary masterpiece, featuring elegant CeaserStone worktops and a DeLonghi Stove, complemented by a separate laundry area for practical luxury living. Upstairs, a family room opens onto a sprawling balcony with breathtaking views, accompanied by an inspiring office with its balcony. Three generous bedrooms and two full bathrooms, including an air-conditioned main bedroom with a walk-in closet and en-suite bathroom, ensure comfort and sophistication. Outside, a double garage with direct entrance and a separate entrance to the front yard provide convenience and privacy. The large sparkling pool and ample lounging space offer perfect outdoor entertainment, with staff quarters for added convenience. Welcome to your dream family home in RangeView, blending modern elegance with timeless charm, both indoors and out.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 9', 'Helderkruin View, Roodepoort, Gauteng', 'Helderkruin View', '4900000.00', 4, 2, '450', '', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 10', 'Sandton Central, Sandton, Gauteng', 'Sandton Central', '4900000.00', 4, 2, '550', 'Welcome to this grand family home featuring double-volume spaces, abundant glass, and light, set on an extraordinary double-sized stand. The entrance hall seamlessly flows into a lounge with a gas fireplace, leading to ultra-modern open living areas with glass stacking doors opening onto a manicured garden and a sparkling heated pool. The dining room, with seating for 10-12, connects to a family or TV room and an enclosed entertainers\' patio with a braai. The contemporary kitchen, with a Smeg oven and gas hob, boasts a large separate scullery/laundry and walk-in pantry. Upstairs, four en-suite bedrooms, including the main bedroom with double-volume ceilings, His and Hers walk-in cupboards, and a balcony overlooking the garden and pool, offer luxurious living. Additional features include a pyjama lounge, four garages, screed flooring, air conditioning, underfloor heating, staff suite, and superior finishes. Located in a secure cluster estate within a 5-minute drive to Sandton CBD, this home offers both luxury and convenience. Viewing by appointment only, adhering to Covid protocols.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 11', 'Rosebank, Johannesburg, Gauteng', 'Rosebank', '1595000.00', 1, 1, '250', 'Introducing a contemporary 1-bedroom apartment located in the heart of Rosebank, perfect for corporate letting. This first-floor apartment exudes modern elegance with its indescribable ambiance and specially built-in storage cabinets. Upon entry, a stunning wine rack display sets a stylish tone. The open-plan dining and living area, intertwined with the kitchen, create a perfect space for professionals and gatherings with loved ones. Luxury quality vinyl flooring enhances the apartment\'s charm. A large modern sliding door leads to the Juliet balcony, allowing for a beautiful summer breeze. The bedroom features a stunning built-in wall headboard for added luxury and comfort. The Jack and Jill bathroom doubles as a guest bathroom and boasts stunning features. Extras include a portable mini inverter, fiber readiness, prepaid utilities, 24-hour security, a pool in the complex, and a lift. Centrally located, the apartment is just 2 minutes from Rosebank Mall and 6 minutes from Sandton City. Don\'t miss out on experiencing the sophistication and convenience this apartment offers.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 12', 'Randpark Ridge, Randburg, Gauteng', 'Randpark Ridge', '2225000.00', 4, 2, '450', 'A beautiful house in Randpark Ridge with 4 bedrooms, 3 bathrooms, and a large garden.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Property 13', 'Greenside, Johannesburg, Gauteng', 'Greenside', '3395000.00', 3, 2, '370', 'Step into the haven your family deserves with this 3-bedroom, 3-bathroom home boasting incredible features. Upon entering the wet room and into the entrance hall, you\'ll be enchanted by the cozy ambiance of the lounge, complete with a charming fireplace for chilly evenings. The kitchen features sleek composite countertops and a five-plate gas stove and oven, while flowing parquet floors add timeless elegance to every room. Outside, discover a lush vegetable garden and fruit trees, alongside a sunny patio with a built-in braai. Additional amenities include a double automated garage, staff quarters, outdoor laundry area, and a Zozo hut with electricity for hobbies or storage. This peaceful family haven offers balance, convenience, and tranquility. Contact us today to schedule a viewing and make it yours! Nestled in the heart of Johannesburg, Greenside offers a vibrant lifestyle with excellent schools, diverse dining options, and easy access to key areas like Rosebank.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55');
+
+
+INSERT INTO properties (title, location, address, price, bedrooms, garage, size, description, status, created_at, updated_at)
+VALUES
+    ('Ruimsig House', 'Ruimsig, Roodepoort, Gauteng', 'Serengity Golf Estate', '4900000.00', 4, 2, '450', 'Welcome to this warm and lovingly maintained home in Serengity Golf Estate, centrally located in Ruimsig, just minutes from Hendrik Potgieter. This property boasts a prime location, secure setting, and excellent value. The impressive design includes ample parking, two double garages, and a luxurious entrance with a staircase and chandelier. The bright, open-plan kitchen features modern dark finishes, granite countertops, space for a double-door fridge, and a separate scullery. The dining and lounge areas lead to a study, built-in bar, and covered patio overlooking a sparkling pool and lush garden. Upstairs, the spacious master bedroom includes walk-in wardrobes, a full en-suite bathroom, and a sunny balcony. There are three additional generous bedrooms, all with en-suite bathrooms, and an extra music room that can also serve as a pajama lounge. Additional features include air conditioning, fiber readiness, staff quarters, and 24-hour security. Ruimsig is conveniently close to multiple private schools, numerous shopping centers, medical facilities, restaurants, and main road access.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Strubensvalley House', 'Strubensvalley, Gauteng', 'Strubensvallei', '3299000.00', 5, 3, '550', 'Elegance meets functionality in this 5-bedroom gem in Strubensvallei. Beyond the wrought-iron gates, this luxurious home features spacious bedrooms, 2.5 bathrooms, including an exclusive master en-suite, and a massive kitchen with modern finishes and a large scullery. Entertain effortlessly in the expansive family lounge, dedicated entertainment room, and outdoor space with a swimming pool, jacuzzi, and built-in braai. Additional amenities include a study, three-car garage, garden shed, and servants quarters. Located on a tranquil street, this property blends peace with accessibility, offering a refined living experience. Contact us for an exclusive viewing and experience luxurious living at its finest.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Constantia Kloof House', 'Constantia Kloof, Roodepoort, Gauteng', 'Constantia Kloof', '2498000.00', 5, 2, '450', 'Discover the charm of this spacious 5-bedroom, 3.5-bathroom family home in Constantia Kloof. Set on a generous 1867m2 property, it offers ample space inside and out. Practicality meets timeless character with plenty of parking, a classic entrance hall, and a large entertainment room downstairs. Upstairs, enjoy a sunroom, dining room with courtyard views, and a spacious kitchen leading to the lounge and outdoor pool area. The master bedroom features a full en-suite with garden access, while additional bedrooms offer cozy retreats. With a big garden, storage facilities, and 2 domestic quarters, this home is ideal for family living. While not the epitome of luxury, its potential and classic charm make it a great opportunity. Schedule a viewing today and envision making this your own!', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Weltevreden Park House', 'Weltevreden Park, Roodepoort, Gauteng', 'Weltevreden Park', '1499000.00', 3, 2, '457', 'Immerse yourself in luxury and comfort with this exquisite 3-bedroom, 3-bathroom home, meticulously designed to enhance your lifestyle. Upon entering, the expansive living area welcomes you with warmth and ample natural light, perfect for relaxation or entertaining. A stylish dining room and separate bar area offer ideal settings for intimate dinners and social gatherings. The heart of the home, the spacious kitchen, boasts modern appliances and ample counter space, inspiring culinary creativity. A versatile fourth bedroom doubles as a spacious office with its ensuite bathroom, offering functionality and privacy. Outside, the wrap-around garden, complete with a stunning patio and large pool, provides a picturesque oasis for relaxation. A double carport ensures shelter for your vehicles, adding convenience to this epitome of modern living.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Little Falls House', 'Little Falls, Roodepoort, Gauteng', 'Little Falls', '899000.00', 3, 2, '350', 'Welcome to this charming simplex townhouse nestled in a sought-after complex, promising comfort and convenience. Inside, an inviting open plan lounge awaits, ideal for relaxation or entertaining guests. The modern kitchen offers ample cupboard space and a dining area, perfect for family meals. Step onto the covered patio to enjoy the fresh air and overlook the neat, small garden, ideal for outdoor gatherings or unwinding. Three cozy bedrooms and a full bathroom cater to family needs, while a single carport, secured behind a gate, ensures convenient parking. Residents can also enjoy the communal swimming pool area for a refreshing oasis on sunny days. Don\'t miss the chance to call this delightful townhouse your new home sweet home!', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Florida Glen', 'Florida Glen, Roodepoort, Gauteng', 'Florida Glen', '4900000.00', 6, 4, '650', 'Welcome to this character-filled 4-bedroom double-story home featuring 2 self-contained cottages, a pool, patio, braai, and lapa. Upon entering through the remote driveway gate, you\'re greeted by spacious living areas on both floors. The lower level boasts a large tiled entrance hall and lounge, open-plan to an entertainer\'s dining area from a charming solid wood kitchen. Two sizable bedrooms and modern bathrooms are downstairs, while upstairs offers two more bedrooms, a study area, lounge, and guest bathroom. Enjoy the landscaped garden, pool, and lapa from the upstairs balcony. Two separate entrances lead to a double garage, carports, and additional features include character Dorma windows, an anthracite stove, exposed beam ceilings, staff quarters, and ample storage space. Situated near local amenities and schools, this property offers both convenience and comfort for the whole family.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Blairgowrie House', 'Blairgowrie, Randburg, Gauteng', 'Blairgowrie', '1849000.00', 3, 2, '350', 'Nestled on a tranquil tree-lined street in Blairgowrie, this property offers proximity to amenities and top schools, with easy access to Sandton and Rosebank. The spacious, modern kitchen and lounge boast direct garage access, granite tops, and a gas hob. Three bedrooms feature ample cupboard space, with Bedroom 1 & 2 sharing a full bathroom and the master bedroom enjoying a dressing room and private en-suite. A garden cottage with 1 bed, 1 bath, living room, kitchen, and en-suite bedroom provides rental income or space for extended family. The private garden hosts a swimming pool and patio, while leased solar panels offer energy efficiency, with the option to transfer or purchase the lease.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Rangeview House', 'Rangeview, Krugersdorp, Gauteng', 'RangeView', '2995000.00', 5, 2, '473', 'Welcome to a remarkable modern family home in the prestigious RangeView neighborhood, where contemporary allure meets family comfort. Upon entry, you\'ll feel the exceptional character of this home, with an expansive family room seamlessly transitioning from the entrance hall. Adjacent is a spacious sunroom with a fireplace, offering tranquil views of the pool and the stunning RangeView valley. The large kitchen is a culinary masterpiece, featuring elegant CeaserStone worktops and a DeLonghi Stove, complemented by a separate laundry area for practical luxury living. Upstairs, a family room opens onto a sprawling balcony with breathtaking views, accompanied by an inspiring office with its balcony. Three generous bedrooms and two full bathrooms, including an air-conditioned main bedroom with a walk-in closet and en-suite bathroom, ensure comfort and sophistication. Outside, a double garage with direct entrance and a separate entrance to the front yard provide convenience and privacy. The large sparkling pool and ample lounging space offer perfect outdoor entertainment, with staff quarters for added convenience. Welcome to your dream family home in RangeView, blending modern elegance with timeless charm, both indoors and out.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Helderkruin View House', 'Helderkruin View, Roodepoort, Gauteng', 'Helderkruin View', '4900000.00', 4, 2, '450', '', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Sandton House', 'Sandton Central, Sandton, Gauteng', 'Sandton Central', '4900000.00', 4, 2, '550', 'Welcome to this grand family home featuring double-volume spaces, abundant glass, and light, set on an extraordinary double-sized stand. The entrance hall seamlessly flows into a lounge with a gas fireplace, leading to ultra-modern open living areas with glass stacking doors opening onto a manicured garden and a sparkling heated pool. The dining room, with seating for 10-12, connects to a family or TV room and an enclosed entertainers\' patio with a braai. The contemporary kitchen, with a Smeg oven and gas hob, boasts a large separate scullery/laundry and walk-in pantry. Upstairs, four en-suite bedrooms, including the main bedroom with double-volume ceilings, His and Hers walk-in cupboards, and a balcony overlooking the garden and pool, offer luxurious living. Additional features include a pyjama lounge, four garages, screed flooring, air conditioning, underfloor heating, staff suite, and superior finishes. Located in a secure cluster estate within a 5-minute drive to Sandton CBD, this home offers both luxury and convenience. Viewing by appointment only, adhering to Covid protocols.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Rosebank Apartment', 'Rosebank, Johannesburg, Gauteng', 'Rosebank', '1595000.00', 1, 1, '250', 'Introducing a contemporary 1-bedroom apartment located in the heart of Rosebank, perfect for corporate letting. This first-floor apartment exudes modern elegance with its indescribable ambiance and specially built-in storage cabinets. Upon entry, a stunning wine rack display sets a stylish tone. The open-plan dining and living area, intertwined with the kitchen, create a perfect space for professionals and gatherings with loved ones. Luxury quality vinyl flooring enhances the apartment\'s charm. A large modern sliding door leads to the Juliet balcony, allowing for a beautiful summer breeze. The bedroom features a stunning built-in wall headboard for added luxury and comfort. The Jack and Jill bathroom doubles as a guest bathroom and boasts stunning features. Extras include a portable mini inverter, fiber readiness, prepaid utilities, 24-hour security, a pool in the complex, and a lift. Centrally located, the apartment is just 2 minutes from Rosebank Mall and 6 minutes from Sandton City. Don\'t miss out on experiencing the sophistication and convenience this apartment offers.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Randpark Ridge House', 'Randpark Ridge, Randburg, Gauteng', 'Randpark Ridge', '2225000.00', 4, 2, '450', 'A beautiful house in Randpark Ridge with 4 bedrooms, 3 bathrooms, and a large garden.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55'),
+
+('Greenside House', 'Greenside, Johannesburg, Gauteng', 'Greenside', '3395000.00', 3, 2, '370', 'Step into the haven your family deserves with this 3-bedroom, 3-bathroom home boasting incredible features. Upon entering the wet room and into the entrance hall, you\'ll be enchanted by the cozy ambiance of the lounge, complete with a charming fireplace for chilly evenings. The kitchen features sleek composite countertops and a five-plate gas stove and oven, while flowing parquet floors add timeless elegance to every room. Outside, discover a lush vegetable garden and fruit trees, alongside a sunny patio with a built-in braai. Additional amenities include a double automated garage, staff quarters, outdoor laundry area, and a Zozo hut with electricity for hobbies or storage. This peaceful family haven offers balance, convenience, and tranquility. Contact us today to schedule a viewing and make it yours! Nestled in the heart of Johannesburg, Greenside offers a vibrant lifestyle with excellent schools, diverse dining options, and easy access to key areas like Rosebank.', 'available', '2024-08-12 12:14:55', '2024-08-12 12:14:55');
+
+ALTER TABLE inquiries MODIFY COLUMN response VARCHAR(255) NULL DEFAULT NULL;
+
+
+
+INSERT INTO inquiries (customer_id, property_id, message, username, property_title, inquiry_date, status)
+VALUES
+    (2, 1, 'I really like this house. Can we meet to discuss sales?', 'Diya Sewnarian', 'Ruimsig House', '2024-08-12 12:14:55', 'pending'),
+    (2, 2, 'Is the price negotiable for this property?', 'Diya Sewnarian', 'Strubensvalley House', '2024-08-13 09:34:21', 'pending'),
+    (3, 1, 'Can I schedule a viewing for this property?', 'Kyle Jardine', 'Ruimsig House', '2024-08-12 15:20:12', 'pending'),
+    (3, 3, 'Is this property still available?', 'Kyle Jardine', 'Constantia Kloof House', '2024-08-14 10:45:34', 'pending'),
+    (15, 2, 'What are the financing options available?', 'John Doe', 'Strubensvalley House', '2024-01-10 11:50:00', 'pending'),
+    (15, 1, 'I would like more pictures of the property.', 'John Doe', 'Ruimsig House', '2024-01-12 08:22:10', 'pending'),
+    (16, 4, 'What is the final price for this house?', 'Jane Smith', 'Weltevreden Park House', '2024-01-15 14:35:47', 'pending'),
+    (16, 2, 'Is this house still available?', 'Jane Smith', 'Strubensvalley House', '2024-01-16 09:12:33', 'pending'),
+    (17, 3, 'Can we arrange a meeting to discuss the sale?', 'Mike Lee', 'Constantia Kloof House', '2024-01-17 16:40:29', 'pending'),
+    (17, 4, 'What is the condition of the house?', 'Mike Lee', 'Weltevreden Park House', '2024-01-18 10:05:11', 'pending'),
+    (18, 1, 'Is the house still open for offers?', 'Sara Johnson', 'Ruimsig House', '2024-01-19 11:20:44', 'pending'),
+    (18, 3, 'Can you provide the property layout?', 'Sara Johnson', 'Constantia Kloof House', '2024-01-20 14:55:12', 'pending'),
+    (19, 4, 'How old is the house?', 'Nina Patel', 'Weltevreden Park House', '2024-01-21 09:30:22', 'pending'),
+    (19, 2, 'What are the taxes on this property?', 'Nina Patel', 'Strubensvalley House', '2024-01-22 15:11:13', 'pending'),
+    (20, 3, 'Can I book a viewing this weekend?', 'Alex King', 'Constantia Kloof House', '2024-01-23 10:00:00', 'pending'),
+    (20, 1, 'Is there parking available?', 'Alex King', 'Ruimsig House', '2024-01-24 13:30:55', 'pending'),
+    (21, 2, 'Can I bring my own contractor to inspect the house?', 'Emily Watson', 'Strubensvalley House', '2024-01-25 11:40:22', 'pending'),
+    (21, 4, 'How long has the property been on the market?', 'Emily Watson', 'Weltevreden Park House', '2024-01-26 12:55:35', 'pending');
+
+
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Rent' WHERE (`id` = '1');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Sale' WHERE (`id` = '2');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Sale' WHERE (`id` = '3');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Rent' WHERE (`id` = '4');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Sale' WHERE (`id` = '5');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Rent ' WHERE (`id` = '6');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Rent' WHERE (`id` = '7');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Sale' WHERE (`id` = '8');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Rent' WHERE (`id` = '9');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Sale' WHERE (`id` = '10');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Sale' WHERE (`id` = '11');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Rent' WHERE (`id` = '12');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Sale' WHERE (`id` = '13');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Rent' WHERE (`id` = '14');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Rent' WHERE (`id` = '15');
+UPDATE `golden_tigers`.`properties` SET `selling_type` = 'Sale' WHERE (`id` = '16');
+
+
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '2' WHERE (`id` = '1');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '3' WHERE (`id` = '2');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '3' WHERE (`id` = '3');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '2' WHERE (`id` = '4');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '2' WHERE (`id` = '5');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '4' WHERE (`id` = '6');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '4' WHERE (`id` = '7');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '4' WHERE (`id` = '8');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '4' WHERE (`id` = '9');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '4' WHERE (`id` = '10');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '3' WHERE (`id` = '11');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '3' WHERE (`id` = '12');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '2' WHERE (`id` = '13');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '2' WHERE (`id` = '14');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '2' WHERE (`id` = '15');
+UPDATE `golden_tigers`.`properties` SET `bathrooms` = '1' WHERE (`id` = '16');
+
+UPDATE `golden_tigers`.`agents` SET `position` = 'Area Specialist', `phone_number` = '0113346578', `area` = 'Ruimsig' WHERE (`id` = '1');
+UPDATE `golden_tigers`.`agents` SET `position` = 'Area Specialist', `phone_number` = '0137678895', `area` = 'Florida' WHERE (`id` = '2');
+UPDATE `golden_tigers`.`agents` SET `position` = 'Area Specialist', `phone_number` = '0115382298', `area` = 'Krugersdorp' WHERE (`id` = '3');
+
